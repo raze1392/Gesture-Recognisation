@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<Gestures>
+    <Gesture char="V" category="alphabets">
+        <Point X="0" Y="0"/>
+        <Point X="2" Y="8"/>
+        <Point X="4" Y="16"/>
+        <Point X="6" Y="24"/>
+        <Point X="8" Y="32"/>
+        <Point X="10" Y="40"/>
+        <Point X="12" Y="48"/>
+        <Point X="14" Y="56"/>
+        <Point X="16" Y="64"/>
+        <Point X="18" Y="72"/>
+        <Point X="20" Y="80"/>
+        <Point X="22" Y="88"/>
+        <Point X="24" Y="96"/>
+        <Point X="26" Y="104"/>
+        <Point X="28" Y="112"/>
+        <Point X="30" Y="120"/>
+        <Point X="32" Y="128"/>
+        <Point X="34" Y="136"/>
+        <Point X="36" Y="144"/>
+        <Point X="38" Y="152"/>
+        <Point X="40" Y="160"/>
+        <Point X="42" Y="168"/>
+        <Point X="44" Y="176"/>
+        <Point X="46" Y="184"/>
+        <Point X="48" Y="192"/>
+        <Point X="50" Y="200"/>
+        <Point X="52" Y="192"/>
+        <Point X="54" Y="184"/>
+        <Point X="56" Y="176"/>
+        <Point X="58" Y="168"/>
+        <Point X="60" Y="160"/>
+        <Point X="62" Y="152"/>
+        <Point X="64" Y="144"/>
+        <Point X="66" Y="136"/>
+        <Point X="68" Y="128"/>
+        <Point X="70" Y="120"/>
+        <Point X="72" Y="112"/>
+        <Point X="74" Y="104"/>
+        <Point X="76" Y="96"/>
+        <Point X="78" Y="88"/>
+        <Point X="80" Y="80"/>
+        <Point X="82" Y="72"/>
+        <Point X="84" Y="64"/>
+        <Point X="86" Y="56"/>
+        <Point X="88" Y="48"/>
+        <Point X="90" Y="40"/>
+        <Point X="92" Y="32"/>
+        <Point X="94" Y="24"/>
+        <Point X="96" Y="16"/>
+        <Point X="98" Y="8"/>
+        <Point X="100" Y="0"/>
+    </Gesture>
+</Gestures>
