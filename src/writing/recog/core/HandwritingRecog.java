@@ -125,9 +125,7 @@ public class HandwritingRecog extends javax.swing.JFrame {
         dez.drawLine(pX, pY, mX, mY);
         pX = mX;
         pY = mY;
-        
-            System.out.print("X: "+mX+" Y: "+mY+"\n");
-        
+                
         input.add(new Points(mX, mY));
     }//GEN-LAST:event_jPanel1MouseDragged
 
@@ -187,9 +185,9 @@ public class HandwritingRecog extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
+                Gesture g = new Gesture ();
+                g.run();
                 new HandwritingRecog().setVisible(true);
-                new Gesture();
-                
             }
         });
     }
