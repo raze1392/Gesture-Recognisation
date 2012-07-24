@@ -8,12 +8,12 @@ package writing.recog.core;
  *
  * @author Renovatio
  */
-public class knnResult {
-    private double distance;
+public class RecogniserResult {
+    private double score;
     private String name;
     
-    public knnResult (String name, double distance) {
-        this.distance = distance;
+    public RecogniserResult (String name, double score) {
+        this.score = score;
         this.name = name;
     }
     
@@ -21,7 +21,7 @@ public class knnResult {
         return name;
     }
     
-    public double getKnnDistance() {
-        return distance;
+    public double getScore() {
+        return score;
     }
 }

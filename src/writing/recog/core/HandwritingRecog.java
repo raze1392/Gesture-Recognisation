@@ -143,7 +143,9 @@ public class HandwritingRecog extends javax.swing.JFrame {
         jPanel1.setBackground(Color.BLACK);
         jTextPane1.setText("Processing......\n");
         
-        CoreUtilities.knn_algo(input);
+        CoreUtilities.gssAlgo(input, g, -45.0, 45.0, 2.0);
+        jTextPane1.setText("Name: " + CoreUtilities.result.get(0).getName()+"\n");
+        jTextPane1.setText("Score: " + CoreUtilities.result.get(0).getScore()+"\n");
     }//GEN-LAST:event_jPanel1MouseReleased
 
     private void jPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MousePressed
@@ -185,7 +187,7 @@ public class HandwritingRecog extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                Gesture g = new Gesture ();
+                g = new Gesture ();
                 g.run();
                 new HandwritingRecog().setVisible(true);
             }
@@ -194,6 +196,7 @@ public class HandwritingRecog extends javax.swing.JFrame {
     
     public int mX, mY, pX , pY;
     private Graphics dez;
+    private static Gesture g;
     ArrayList <Points> input = new ArrayList<Points> () ;
    
     // Variables declaration - do not modify//GEN-BEGIN:variables

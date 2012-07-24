@@ -16,7 +16,10 @@ public class CoreUtilities {
     private static int max_X = 0, min_X = 0; 
     private static int max_Y = 0, min_Y = 0;
     private static int width_X = 0, width_Y = 0;
-    public static ArrayList <knnResult> knn = new ArrayList<> ();
+    private static int RESAMPLE = 60;
+    private static double GOLDEN_RATIO = (-1 + Math.sqrt(5) ) / 2;
+    private static boolean processed = false;
+    public static ArrayList <RecogniserResult> result = new ArrayList<> ();
     
     public static double calculatePathLength (ArrayList<Points> point) {
         double path_len = 0;
@@ -64,7 +67,6 @@ public class CoreUtilities {
         int num_points = point.size();
         
         if (num_points > 0) {
-            
             max_X = point.get(0).getIntX();
             max_Y = point.get(0).getIntY();
             min_X = point.get(0).getIntX();
@@ -76,7 +78,7 @@ public class CoreUtilities {
                 int temp = point.get(i).getIntX();
                 if (temp > max_X){
                     max_X = temp;
-                } else if (temp <= min_X){
+                } else if (temp < min_X){
                     min_X = temp;
                 }
                 
@@ -84,7 +86,7 @@ public class CoreUtilities {
                 temp = point.get(i).getIntY();
                 if (temp > max_Y){
                     max_Y = temp;
-                } else if (temp <= min_Y){
+                } else if (temp < min_Y){
                     min_Y = temp;
                 }
             }
@@ -135,13 +137,17 @@ public class CoreUtilities {
         if (wX <= 0 || wY <=0 || num_points == 0 ){
             return null;
         } else {
-            float scaleX = (float)width_X / wX;
-            float scaleY = (float)width_Y / wY;
-            float scale = (scaleX + scaleY) / 2;
+            float scaleX = (float)wX / width_X;
+            float scaleY = (float)wY / width_Y;
             /* System.out.print("===================Knn===================");
              System.out.print("Width: "+width_X+"*"+width_Y+"\n");
              System.out.print("ScaleX: "+scaleX+" ScaleY:"+scaleY+"\n");*/
-            ArrayList<Points> pts = scaleByPercent(scale, point);
+            ArrayList<Points> pts = new ArrayList<> ();
+            for (int i=0; i<num_points; i++) {
+                /* Scale the point up or down by a factor of 'scaleX * scaleY' */
+                pts.add(new Points ((int)(point.get(i).getIntX()*scaleX), 
+                                          (int)(point.get(i).getIntY()*scaleY)));
+            }
             return pts;
         }
         
@@ -151,8 +157,8 @@ public class CoreUtilities {
                                                 ArrayList<Points> point) {
         int num_points = point.size();
         if (num_points > 0 ) {
-            int displaceX = orgCtd.getIntX() - newCtd.getIntX();
-            int displaceY = orgCtd.getIntY() - newCtd.getIntY();
+            int displaceX = newCtd.getIntX() - orgCtd.getIntX();
+            int displaceY = newCtd.getIntY() - orgCtd.getIntY();
             ArrayList<Points> pts = new ArrayList<> ();
             
             for (int i=0; i<num_points; i++) {
@@ -167,92 +173,210 @@ public class CoreUtilities {
         }
     }
     
+    /*
+     * Resamples no. of points to N equidistant points based on interpolation
+     */
     public static ArrayList<Points> resampleInput (ArrayList<Points> point, 
                                                 int resample_num) {
         int num_points = point.size();
-        if (num_points < 0 || resample_num <=10){
+        if (num_points < 0 || resample_num <=32){
             return null;
         } else {
-            double totalpath = calculatePathLength(point);
-            //System.out.print("Pathlen: "+totalpath+"\n");
-            /* Calculate the differnce to lie between two points if resampled to N */
-            double diff = totalpath / resample_num;
-            //System.out.print("Diff: "+diff+"\n"+resample_num);
+            double diff = calculatePathLength(point) / (resample_num-1);
             ArrayList<Points> pts = new ArrayList<> ();
-            double temp = 0.0;
-            int prev, curr; //Index of previous point added and current point
-
+            double t_dist = 0.0;
             pts.add(new Points ((int)point.get(0).getIntX(), 
                                             (int)point.get(0).getIntY()));
-            prev = 0;
-            for (int i=1; i<num_points; i++) {
-                curr = i;
-                temp += calculateDistance((Points)point.get(i-1), (Points)point.get(i));
-                int num = pts.size();
-                
-                // This is to check and resample the input. If the no. of resampled
-                // points are greater than 45 and the no of remaining points in the input
-                // is equal to the no. of points left to make it to the resampled input
-                // we add all the points.
-                // else we add those points that lie at a distance 'diff' to each other
-                if (num > 30 && ((resample_num-num) == (num_points - i))) {
-                    pts.add(new Points ((int)point.get(i).getIntX(), 
-                                            (int)point.get(i).getIntY()));
-                    temp = 0; 
-                    prev = i;
-                    continue;
+            
+            for (int i=1; i<point.size(); i++) {
+                double d = calculateDistance((Points)point.get(i-1), (Points)point.get(i));
+                if ((t_dist+d) >= diff) {
+                    int X = (int)(point.get(i-1).getIntX() + 
+                            ((diff - t_dist)/d)*(point.get(i).getIntX()-point.get(i-1).getIntX()));
+                    int Y = (int)(point.get(i-1).getIntY() + 
+                            ((diff - t_dist)/d)*(point.get(i).getIntY()-point.get(i-1).getIntY()));
+                    
+                    pts.add(new Points (X, Y));
+                    t_dist = 0.0;
+                    point.add(i, new Points(X, Y));
+                    //System.out.print("i: "+point.get(i).getIntX()+"*"+point.get(i).getIntY()+"\n");
+                } else {
+                    t_dist += d;
                 }
-                else if (temp > diff) {
-                    double del = temp - diff;
-                    if (del > (temp/4)) {
-                        pts.add(new Points ((int)point.get((int)(prev+(curr-prev)/2)).getIntX(), 
-                                            (int)point.get((int)(prev+(curr-prev)/2)).getIntY()));
-                    }
-                    pts.add(new Points ((int)point.get(i-1).getIntX(), 
-                                            (int)point.get(i-1).getIntY()));
-                    temp = 0;
-                    prev = i-1;
-                } 
             }
             return pts;
         }
     }
     
- /**********************************************************************************
-  * *******************    THE KNN ALGORITHM    ***********************************
- * *******************************************************************************/
+    public static ArrayList <Points> rotateByAngle(ArrayList<Points> point, double angle) {
+        
+        int num_points = point.size();
+        if (num_points > 0) {
+            double rad = Math.toRadians(angle);
+            ArrayList<Points> pts = new ArrayList<> ();
+            Points cent = calculateCentroid(point);
+            int cX = cent.getIntX();
+            int cY = cent.getIntY();
+            for (int i=0; i<num_points; i++){
+               int X = (int)((point.get(i).getIntX()-cX)*Math.cos(rad) - 
+                                (point.get(i).getIntY()-cY)*Math.sin(rad) + cX ); 
+               int Y = (int)((point.get(i).getIntX()-cX)*Math.sin(rad) - 
+                                (point.get(i).getIntY()-cY)*Math.cos(rad) + cY );
+               pts.add(new Points(X, Y));
+            }
+            
+            return pts;     
+        } else {
+            return null;
+        }
+    }
+    
+    public static ArrayList <Points> rotateToZero(ArrayList<Points> point) {
+        int num_points = point.size();
+        ArrayList<Points> pts = new ArrayList<> ();
+        Points cent = calculateCentroid(point);
+        int cX = cent.getIntX();
+        int cY = cent.getIntY();
+        double zeroAng = Math.atan2(cY - point.get(0).getIntY(), cX - point.get(0).getIntX());
+        zeroAng = Math.toDegrees(zeroAng);
+        pts = rotateByAngle(point, zeroAng);
+        return pts;        
+    }
+    
+    public static double pathDistance(ArrayList<Points> input, ArrayList<Points> gesture) {
+        int num_points = input.size();
+        double dist = 0;
+        for (int i=0; i<num_points; i++){
+            dist += calculateDistance(input.get(i), gesture.get(i));
+        }
+        double avg = dist / RESAMPLE;
+        return avg;
+    }
+    
+    public static double pathByAngle(ArrayList<Points> input, ArrayList<Points> gesture, double angle) {
+        input = rotateByAngle(input, angle);
+        double path = pathDistance(input, gesture);
+        return path;
+    }
+    
+    public static double bestAngleDistance(ArrayList<Points> input, ArrayList<Points> gesture, 
+                                                        double angA ,double angB, double angDelta) {
+        double angX1 = GOLDEN_RATIO*angA + (1-GOLDEN_RATIO)*angB;
+        double f1 = pathByAngle(input, gesture, angX1);
+        double angX2 = (1-GOLDEN_RATIO)*angA + GOLDEN_RATIO*angB;
+        double f2 = pathByAngle(input, gesture, angX2);
+        
+        while (Math.abs(angA - angB) > angDelta) {
+            if (f1 < f2){
+                angB = angX2;
+                angX2 = angX1;
+                f2 = f1;
+                angX1 = GOLDEN_RATIO*angA + (1-GOLDEN_RATIO)*angB;
+                f1 = pathByAngle(input, gesture, angX1);
+            } else {
+                angA = angX1;
+                angX1 = angX2;
+                f1 = f2;
+                angX2 = (1-GOLDEN_RATIO)*angA + GOLDEN_RATIO*angB;
+                f2 = pathByAngle(input, gesture, angX2);
+            }
+        }
+        
+        return Math.min(f1, f2);
+    }
+    
+    public static ArrayList<Points> preProcessing (ArrayList<Points> input, Gesture temp) {
+        
+        input = resampleInput(input, RESAMPLE);
+        input = rotateToZero(input);
+        findExtremumXY(input);
+        input = scaleByWandH(100, 100, input);
+        Points centroid = calculateCentroid(input);
+        input = relocateCentroid(centroid, new Points(0, 0), input);
+         
+        if (!processed) {
+            int n_temp = Gesture.gestures_list.size();
+            for (int i=0; i<n_temp; i++) {
+                ArrayList <Points> compare = Gesture.gestures_list.get(i).getPoints();
+                compare = resampleInput(compare, RESAMPLE);
+                compare = rotateToZero(compare);
+                findExtremumXY(compare);
+                compare = scaleByWandH(100, 100, compare);
+                centroid = calculateCentroid(compare);
+                compare = relocateCentroid(centroid, new Points(0, 0), compare);
+                Gesture.gestures_list.set(i, new GesturesList(Gesture.gestures_list.get(i).getName(), compare));
+            }
+            processed = true;
+        }
+        return input;
+    }
+    
+  /******************************************************************************
+   ********************    GESTURE RECOGNISER ALGO    ***************************
+   ******************   BASED ON GOLDEN SECTION SEARCH    ***********************
+   ******************************************************************************/ 
+    
+    public static void gssAlgo (ArrayList<Points> input, Gesture templates,
+                                                double minAng, double maxAng, double angDel) {
+        input = preProcessing(input, templates);
+        double b = Math.PI * 10000;
+        int n_temp = Gesture.gestures_list.size();
+        String temp_name = "";
+        for (int i=0; i<n_temp; i++){
+            double d = bestAngleDistance(input, Gesture.gestures_list.get(i).getPoints(),
+                                                minAng, maxAng, angDel);
+            if (d < b){
+                b = d;
+                temp_name = Gesture.gestures_list.get(i).getName();
+            }
+        }
+        double score = (1 - b) / (.5*Math.sqrt((100*100) + (100*100)));
+        System.out.print("b: "+b);
+        System.out.print("bv: "+.5*Math.sqrt((100*100) + (100*100)));
+        result.add(new RecogniserResult(temp_name, score));
+    }
+    
+ /*******************************************************************************
+  ************************    THE KNN ALGORITHM    ******************************
+  ******************************************************************************/   
 
-    public static void knn_algo(ArrayList<Points> inp){
+    public static void knnAlgo(ArrayList<Points> inp){
         int num_points = inp.size();
         double rec_dist = 0;
         
         if (num_points > 0){
             findExtremumXY(inp);
+            /*System.out.print("Mx: "+max_X+"*"+min_X+"\n");
+            System.out.print("My: "+max_Y+"*"+min_Y+"\n");
+            System.out.print("X: "+width_X+"*"+width_Y+"\n");*/
             inp = scaleByWandH(100, 200, inp);
             inp = resampleInput(inp, 60);
             Points inp_centroid = calculateCentroid(inp);
-            /*System.out.print("===================Knn===================");
-            System.out.print("Size: "+inp.size());
-            for (int i=0; i<inp.size(); i++) {
-                System.out.print("X: "+inp.get(i).getIntX()+" Y: "+inp.get(i).getIntY()+"\n");
-            }*/
+            
             if (Gesture.parsed) {
                 int gest = Gesture.gestures_list.size();
 
                 if (gest > 0) {
+                    
                     for (int i=0; i<gest; i++){
-                        Points gest_centroid = calculateCentroid(Gesture.gestures_list.get(i).getPoints());
-                        System.out.print("Input size: "+inp.size()+"\n");
-                        inp = relocateCentroid(inp_centroid, gest_centroid, inp);
-                        System.out.print("Total: "+inp.size()+"\n");
-                        ArrayList <Points> compare = Gesture.gestures_list.get(i).getPoints();
-                        int num = Math.min(compare.size(), inp.size());
                         
-                        for (int j=0; j<num; j++) {
-                            double dist = calculateDistance((Points)inp.get(j), (Points)compare.get(j));
-                            rec_dist += (1/dist);
+                        ArrayList <Points> compare = Gesture.gestures_list.get(i).getPoints();
+                        compare = resampleInput(compare, 60);
+                        Points gest_centroid = calculateCentroid(compare);
+                        compare = relocateCentroid(gest_centroid, new Points(0, 0), compare);
+                        inp = relocateCentroid(inp_centroid, new Points(0, 0), inp);
+                        /*for (int l=0; l<60; l++){
+                            System.out.print("Input: "+inp.get(l).getIntX()+"*"+inp.get(l).getIntY()+"\n");
+                            System.out.print("Compare: "+compare.get(l).getIntX()+"*"+compare.get(l).getIntY()+"\n");
+                        }*/
+                        for (int j=0; j<60; j++) {
+                            for (int k=0; k<60; k++) {
+                                double dist = calculateDistance((Points)inp.get(k), (Points)compare.get(j));
+                                System.out.print("Dist: "+dist+"\n");
+                                rec_dist += (1/dist);
+                            }
                         }
-                        knn.add(new knnResult(Gesture.gestures_list.get(i).getName(), rec_dist));
+                        result.add(new RecogniserResult(Gesture.gestures_list.get(i).getName(), rec_dist));
                     }
 
                 }
