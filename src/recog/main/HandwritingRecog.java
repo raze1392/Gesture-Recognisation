@@ -1,5 +1,5 @@
 
-package writing.recog.core;
+package recog.main;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -7,6 +7,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
+import recog.core.CoreUtilities;
+import recog.core.Points;
+import recog.gesture.Gesture;
 
 /*
  * To change this template, choose Tools | Templates
