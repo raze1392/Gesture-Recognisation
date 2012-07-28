@@ -22,6 +22,7 @@ public class Gesture implements Runnable{
     
     public static ArrayList<GesturesList> gestures_list = new ArrayList<> (); 
     private static ArrayList<Points> gesture_points = new ArrayList<> ();
+    private static ArrayList<Points> prev_points = new ArrayList<> ();
     private static String gesture_name;
     public static boolean parsed = false;
         
@@ -36,14 +37,14 @@ public class Gesture implements Runnable{
                 @Override
                 public void startDocument() throws SAXException {
                     super.startDocument();
-                    System.out.print("begin Parsing doc...");
+                    //System.out.print("begin Parsing doc...\n");
                     parsed = false;
                 }
 
                 @Override
                 public void endDocument() throws SAXException {
                     super.endDocument();
-                    System.out.print("end Parsing doc...");
+                    //System.out.print("end Parsing doc...\n");
                     parsed = true;
                 }
                 
@@ -53,11 +54,16 @@ public class Gesture implements Runnable{
                 @Override
                 public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
                     super.startElement(uri, localName, qName, attributes);
+                    
+                    //System.out.print(qName+"\n");
                     if (qName.equalsIgnoreCase("Point")){
                         X = Integer.parseInt(attributes.getValue("X"));
                         Y = Integer.parseInt(attributes.getValue("Y"));
+                        //System.out.print("X*Y: "+X+"*"+Y+"\n");
                     } else if (qName.equalsIgnoreCase("Gesture")) {
-                        gesture_name = attributes.getValue("char");
+                        gesture_points = new ArrayList<>();
+                        gesture_name = attributes.getValue("name");
+                        //System.out.print("name: "+gesture_name+"\n");
                     }
                 }
                 
@@ -67,11 +73,13 @@ public class Gesture implements Runnable{
                 @Override
                 public void endElement(String uri, String localName, String qName) throws SAXException {
                     super.endElement(uri, localName, qName);
+                    
+                    //System.out.print(qName+"\n");
                     if (qName.equalsIgnoreCase("Point")){
                         gesture_points.add(new Points(X, Y));
                     } else if (qName.equalsIgnoreCase("Gesture")) {
                         gestures_list.add(new GesturesList(gesture_name, gesture_points));
-                    }
+                    } 
                 }
 
                 @Override

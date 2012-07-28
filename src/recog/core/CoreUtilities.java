@@ -19,10 +19,10 @@ public class CoreUtilities {
     private static int max_X = 0, min_X = 0; 
     private static int max_Y = 0, min_Y = 0;
     private static int width_X = 0, width_Y = 0;
-    private static int RESAMPLE = 60;
+    public static int RESAMPLE = 60;
     private static double GOLDEN_RATIO = (-1 + Math.sqrt(5) ) / 2;
     private static boolean processed = false;
-    public static ArrayList <RecogniserResult> result = new ArrayList<> ();
+    public static ArrayList <RecogniserResult> result;
     
     public static double calculatePathLength (ArrayList<Points> point) {
         double path_len = 0;
@@ -185,7 +185,7 @@ public class CoreUtilities {
         
         double diff = calculatePathLength(input) / (resample_num-1);
         ArrayList<Points> src = new ArrayList (input);
-        ArrayList<Points> dest = new ArrayList (input);
+        ArrayList<Points> dest = new ArrayList<> ();
         double t_dist = 0.0;
         dest.add(src.get(0));
 
@@ -239,7 +239,7 @@ public class CoreUtilities {
             for (int i=0; i<num_points; i++){
                int X = (int)((point.get(i).getIntX()-cX)*Math.cos(rad) - 
                                 (point.get(i).getIntY()-cY)*Math.sin(rad) + cX ); 
-               int Y = (int)((point.get(i).getIntX()-cX)*Math.sin(rad) - 
+               int Y = (int)((point.get(i).getIntX()-cX)*Math.sin(rad) + 
                                 (point.get(i).getIntY()-cY)*Math.cos(rad) + cY );
                pts.add(new Points(X, Y));
             }
@@ -287,7 +287,8 @@ public class CoreUtilities {
     public static double pathDistance(ArrayList<Points> input, ArrayList<Points> gesture) {
         int num_points = input.size();
         double dist = 0;
-        for (int i=0; i<num_points; i++){
+        int c = Math.min(input.size(), gesture.size());
+        for (int i=0; i<c; i++){
             dist += calculateDistance(input.get(i), gesture.get(i));
         }
         double avg = dist / RESAMPLE;
@@ -332,27 +333,18 @@ public class CoreUtilities {
         input = rotateToZero(input);
         findExtremumXY(input);
         input = scaleByWandH(250, 250, input);
-        Points centroid = calculateCentroid(input);
         input = relocateCentroid(new Points(0, 0), input);
-        System.out.print("\n*******************INPUT*****************"+input.size()+"\n");
-        for (int l=0; l<input.size(); l++){
-           System.out.print("Input: "+input.get(l).getIntX()+"*"+input.get(l).getIntY()+"\n");
-        } 
         if (!processed) {
             int n_temp = Gesture.gestures_list.size();
             for (int i=0; i<n_temp; i++) {
+                String name = Gesture.gestures_list.get(i).getName();
                 ArrayList <Points> compare = Gesture.gestures_list.get(i).getPoints();
                 compare = resampleInput(compare, RESAMPLE);
                 compare = rotateToZero(compare);
                 findExtremumXY(compare);
                 compare = scaleByWandH(250, 250, compare);
-                centroid = calculateCentroid(compare);
                 compare = relocateCentroid(new Points(0, 0), compare);
-                Gesture.gestures_list.set(i, new GesturesList(Gesture.gestures_list.get(i).getName(), compare));
-                System.out.print("\n*******************GESTURE*****************"+compare.size()+"\n");
-                for (int l=0; l<compare.size(); l++){
-                   System.out.print("Gesture: "+compare.get(l).getIntX()+"*"+compare.get(l).getIntY()+"\n");
-                } 
+                Gesture.gestures_list.set(i, new GesturesList(name, compare));
             }
             processed = true;
         }
@@ -367,9 +359,12 @@ public class CoreUtilities {
     public static void gssAlgo (ArrayList<Points> input, Gesture templates,
                                                 double minAng, double maxAng, double angDel) {
         input = preProcessing(input, templates);
+        result = new ArrayList<>();
+        int l = input.size();
         double b = Math.PI * 10000;
         int n_temp = Gesture.gestures_list.size();
         String temp_name = "";
+        double score = 0.0;
         for (int i=0; i<n_temp; i++){
             double d = bestAngleDistance(input, Gesture.gestures_list.get(i).getPoints(),
                                                 minAng, maxAng, angDel);
@@ -377,10 +372,8 @@ public class CoreUtilities {
                 b = d;
                 temp_name = Gesture.gestures_list.get(i).getName();
             }
+            score = 1 - (b / (.5*Math.sqrt((250*250) + (250*250))));
         }
-        double score = 1 - (b / (.5*Math.sqrt((250*250) + (250*250))));
-        System.out.print("b: "+b);
-        System.out.print("bv: "+.5*Math.sqrt((250*250) + (250*250)));
         result.add(new RecogniserResult(temp_name, score));
     }
     

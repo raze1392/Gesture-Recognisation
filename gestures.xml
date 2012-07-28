@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 To change this template, choose Tools | Templates
 and open the template in the editor.
--->
-
-
-<Gestures>
-    <Gesture char="V" category="alphabets">
+--><Gestures>
+    
+    <Gesture category="alphabets" name="V">
         <Point X="0" Y="0"/>
         <Point X="2" Y="8"/>
         <Point X="4" Y="16"/>
@@ -59,4 +57,130 @@ and open the template in the editor.
         <Point X="98" Y="8"/>
         <Point X="100" Y="0"/>
     </Gesture>
+<Gesture category="alphabets" name="S">
+<Point X="230" Y="75"/>
+<Point X="222" Y="70"/>
+<Point X="213" Y="68"/>
+<Point X="204" Y="66"/>
+<Point X="194" Y="66"/>
+<Point X="184" Y="68"/>
+<Point X="174" Y="69"/>
+<Point X="165" Y="72"/>
+<Point X="159" Y="77"/>
+<Point X="152" Y="82"/>
+<Point X="145" Y="88"/>
+<Point X="138" Y="94"/>
+<Point X="135" Y="102"/>
+<Point X="135" Y="111"/>
+<Point X="136" Y="120"/>
+<Point X="136" Y="129"/>
+<Point X="139" Y="137"/>
+<Point X="143" Y="145"/>
+<Point X="148" Y="151"/>
+<Point X="155" Y="157"/>
+<Point X="162" Y="159"/>
+<Point X="170" Y="161"/>
+<Point X="178" Y="164"/>
+<Point X="186" Y="165"/>
+<Point X="195" Y="167"/>
+<Point X="203" Y="170"/>
+<Point X="211" Y="173"/>
+<Point X="219" Y="175"/>
+<Point X="226" Y="179"/>
+<Point X="233" Y="183"/>
+<Point X="240" Y="187"/>
+<Point X="246" Y="194"/>
+<Point X="251" Y="201"/>
+<Point X="257" Y="208"/>
+<Point X="261" Y="216"/>
+<Point X="263" Y="224"/>
+<Point X="262" Y="233"/>
+<Point X="258" Y="241"/>
+<Point X="255" Y="249"/>
+<Point X="251" Y="257"/>
+<Point X="247" Y="265"/>
+<Point X="243" Y="273"/>
+<Point X="238" Y="279"/>
+<Point X="232" Y="285"/>
+<Point X="225" Y="290"/>
+<Point X="217" Y="295"/>
+<Point X="208" Y="299"/>
+<Point X="199" Y="301"/>
+<Point X="191" Y="304"/>
+<Point X="182" Y="307"/>
+<Point X="172" Y="308"/>
+<Point X="162" Y="308"/>
+<Point X="153" Y="305"/>
+<Point X="145" Y="301"/>
+<Point X="136" Y="297"/>
+<Point X="128" Y="293"/>
+<Point X="123" Y="285"/>
+<Point X="119" Y="277"/>
+<Point X="118" Y="267"/>
+<Point X="118" Y="257"/>
+<Point X="118" Y="247"/>
+</Gesture>
+
+<Gesture category="alphabets" name="X">
+<Point X="121" Y="63"/>
+<Point X="128" Y="70"/>
+<Point X="134" Y="80"/>
+<Point X="140" Y="90"/>
+<Point X="145" Y="101"/>
+<Point X="151" Y="113"/>
+<Point X="156" Y="125"/>
+<Point X="162" Y="136"/>
+<Point X="168" Y="148"/>
+<Point X="174" Y="160"/>
+<Point X="179" Y="172"/>
+<Point X="186" Y="183"/>
+<Point X="192" Y="194"/>
+<Point X="200" Y="204"/>
+<Point X="205" Y="216"/>
+<Point X="211" Y="228"/>
+<Point X="216" Y="239"/>
+<Point X="222" Y="250"/>
+<Point X="228" Y="261"/>
+<Point X="234" Y="272"/>
+<Point X="239" Y="282"/>
+<Point X="246" Y="293"/>
+<Point X="253" Y="303"/>
+<Point X="259" Y="312"/>
+<Point X="263" Y="320"/>
+<Point X="262" Y="316"/>
+<Point X="263" Y="302"/>
+<Point X="262" Y="288"/>
+<Point X="261" Y="274"/>
+<Point X="259" Y="260"/>
+<Point X="259" Y="245"/>
+<Point X="256" Y="232"/>
+<Point X="256" Y="217"/>
+<Point X="256" Y="202"/>
+<Point X="256" Y="187"/>
+<Point X="256" Y="172"/>
+<Point X="256" Y="157"/>
+<Point X="256" Y="142"/>
+<Point X="256" Y="127"/>
+<Point X="256" Y="112"/>
+<Point X="253" Y="107"/>
+<Point X="246" Y="119"/>
+<Point X="240" Y="131"/>
+<Point X="233" Y="143"/>
+<Point X="226" Y="155"/>
+<Point X="221" Y="168"/>
+<Point X="215" Y="180"/>
+<Point X="207" Y="191"/>
+<Point X="199" Y="203"/>
+<Point X="192" Y="215"/>
+<Point X="184" Y="226"/>
+<Point X="176" Y="238"/>
+<Point X="168" Y="249"/>
+<Point X="160" Y="260"/>
+<Point X="152" Y="271"/>
+<Point X="144" Y="282"/>
+<Point X="138" Y="294"/>
+<Point X="131" Y="305"/>
+<Point X="126" Y="316"/>
+<Point X="121" Y="326"/>
+</Gesture>
 </Gestures>
