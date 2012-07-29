@@ -24,13 +24,13 @@ public class CoreUtilities {
     private static boolean processed = false;
     public static ArrayList <RecogniserResult> result;
     
-    public static double calculatePathLength (ArrayList<Points> point) {
+    public static double calculatePathLength (ArrayList<Point> point) {
         double path_len = 0;
         int num_points = point.size();
         
         if (num_points > 0) {
             for (int i=1; i<num_points; i++) {
-                double dist = calculateDistance((Points)point.get(i-1), (Points)point.get(i));
+                double dist = calculateDistance((Point)point.get(i-1), (Point)point.get(i));
                 path_len += dist;
             }
             return path_len;
@@ -39,14 +39,14 @@ public class CoreUtilities {
         }
     }
     
-    public static double calculateDistance(Points p1, Points p2) {
+    public static double calculateDistance(Point p1, Point p2) {
         double dx = (double)Math.pow(Math.abs(p2.getIntX() - p1.getIntX()), 2);
         double dy = (double)Math.pow(Math.abs(p2.getIntY() - p1.getIntY()), 2);
         double sq = dx + dy;
         return Math.sqrt(sq);
     }
     
-    public static Points calculateCentroid (ArrayList<Points> point) {
+    public static Point calculateCentroid (ArrayList<Point> point) {
         int tX = 0;
         int tY = 0;
         int num_points = point.size();
@@ -60,13 +60,13 @@ public class CoreUtilities {
             tX /= num_points;
             tY /= num_points;
             
-            return new Points(tX, tY);
+            return new Point(tX, tY);
         }else{
-            return new Points(0, 0);
+            return new Point(0, 0);
         }
       }
     
-    public static void findExtremumXY (ArrayList<Points> point) {
+    public static void findExtremumXY (ArrayList<Point> point) {
         int num_points = point.size();
         
         if (num_points > 0) {
@@ -110,19 +110,19 @@ public class CoreUtilities {
         }
     }
     
-    public static ArrayList<Points> scaleByPercent (float scale, 
-                                                ArrayList<Points> point) {
+    public static ArrayList<Point> scaleByPercent (float scale, 
+                                                ArrayList<Point> point) {
         int num_points = point.size();
 
         if (scale <= 0 || num_points == 0 ){
             return null;
         } else {
             
-            ArrayList<Points> pts = new ArrayList<> ();
+            ArrayList<Point> pts = new ArrayList<> ();
             for (int i=0; i<num_points; i++) {
                 
                 /* Scale the point up or down by a factor of 'scale' */
-                pts.add(new Points ((int)(point.get(i).getIntX()*scale), 
+                pts.add(new Point ((int)(point.get(i).getIntX()*scale), 
                                           (int)(point.get(i).getIntY()*scale)));
             }
             /*System.out.print("==========================================="+scale+"\n");
@@ -133,8 +133,8 @@ public class CoreUtilities {
         } 
     }
     
-    public static ArrayList<Points> scaleByWandH (int wX, int wY, 
-                                                ArrayList<Points> point) {
+    public static ArrayList<Point> scaleByWandH (int wX, int wY, 
+                                                ArrayList<Point> point) {
         int num_points = point.size();
         
         if (wX <= 0 || wY <=0 || num_points == 0 ){
@@ -145,10 +145,10 @@ public class CoreUtilities {
             /* System.out.print("===================Knn===================");
              System.out.print("Width: "+width_X+"*"+width_Y+"\n");
              System.out.print("ScaleX: "+scaleX+" ScaleY:"+scaleY+"\n");*/
-            ArrayList<Points> pts = new ArrayList<> ();
+            ArrayList<Point> pts = new ArrayList<> ();
             for (int i=0; i<num_points; i++) {
                 /* Scale the point up or down by a factor of 'scaleX * scaleY' */
-                pts.add(new Points ((int)(point.get(i).getIntX()*scaleX), 
+                pts.add(new Point ((int)(point.get(i).getIntX()*scaleX), 
                                           (int)(point.get(i).getIntY()*scaleY)));
             }
             return pts;
@@ -156,18 +156,18 @@ public class CoreUtilities {
         
     }
     
-    public static ArrayList<Points> relocateCentroid (Points newCtd,  
-                                                ArrayList<Points> point) {
+    public static ArrayList<Point> relocateCentroid (Point newCtd,  
+                                                ArrayList<Point> point) {
         int num_points = point.size();
         if (num_points > 0 ) {
-            Points cent = calculateCentroid(point);
+            Point cent = calculateCentroid(point);
             int cX = cent.getIntX();
             int cY = cent.getIntY();
-            ArrayList<Points> pts = new ArrayList<> ();
+            ArrayList<Point> pts = new ArrayList<> ();
             
             for (int i=0; i<num_points; i++) {
                 /* Move all the points in locus with the new centroid  */
-                pts.add(new Points ((int)(point.get(i).getIntX()+ newCtd.getIntX() - cX), 
+                pts.add(new Point ((int)(point.get(i).getIntX()+ newCtd.getIntX() - cX), 
                                           (int)(point.get(i).getIntY()+ newCtd.getIntY() - cY)));
             }
             
@@ -180,29 +180,29 @@ public class CoreUtilities {
     /*
      * Resamples no. of points to N equidistant points based on interpolation
      */
-    public static ArrayList<Points> resampleInput (ArrayList<Points> input, 
+    public static ArrayList<Point> resampleInput (ArrayList<Point> input, 
                                                 int resample_num) {
         
         double diff = calculatePathLength(input) / (resample_num-1);
-        ArrayList<Points> src = new ArrayList (input);
-        ArrayList<Points> dest = new ArrayList<> ();
+        ArrayList<Point> src = new ArrayList (input);
+        ArrayList<Point> dest = new ArrayList<> ();
         double t_dist = 0.0;
         dest.add(src.get(0));
 
         for (int i=1; i<src.size(); i++) {
-            Points p1 = src.get(i-1);
-            Points p2 = src.get(i);
+            Point p1 = src.get(i-1);
+            Point p2 = src.get(i);
             double d = calculateDistance(p1, p2);
             if ((t_dist+d) >= diff) {
                 /*
                 int X = (int)Math.round((p1.getIntX() + ((diff - t_dist)/d)*(p2.getIntX()-p1.getIntX())));
                 int Y = (int)Math.round((p1.getIntY() + ((diff - t_dist)/d)*(p2.getIntY()-p1.getIntY())));
                 */
-                double ang = indicativeAngleWrtPoints(p1, p2);
+                double ang = indicativeAngleWrtPoint(p1, p2);
                 int X = (int)(p1.getIntX() + ((diff - t_dist)*Math.cos(Math.toRadians(ang))));
                 int Y = (int)(p1.getIntY() + ((diff - t_dist)*Math.sin(Math.toRadians(ang))));
-                dest.add(new Points (X, Y));
-                src.add(i, new Points(X, Y));
+                dest.add(new Point (X, Y));
+                src.add(i, new Point(X, Y));
                 t_dist = 0.0;
                 //System.out.print("i: "+point.get(i).getIntX()+"*"+point.get(i).getIntY()+"\n");
             } else {
@@ -227,13 +227,13 @@ public class CoreUtilities {
     // +y-axis straight down. Rotation is clockwise such that from +x-axis to
     // +y-axis is +90 degrees, from +x-axis to -x-axis is +180 degrees, and 
     // from +x-axis to -y-axis is -90 degrees.
-    public static ArrayList <Points> rotateByAngle(ArrayList<Points> point, double angle) {
+    public static ArrayList <Point> rotateByAngle(ArrayList<Point> point, double angle) {
         
         int num_points = point.size();
         if (num_points > 0) {
             double rad = Math.toRadians(angle);
-            ArrayList<Points> pts = new ArrayList<> ();
-            Points cent = calculateCentroid(point);
+            ArrayList<Point> pts = new ArrayList<> ();
+            Point cent = calculateCentroid(point);
             int cX = cent.getIntX();
             int cY = cent.getIntY();
             for (int i=0; i<num_points; i++){
@@ -241,7 +241,7 @@ public class CoreUtilities {
                                 (point.get(i).getIntY()-cY)*Math.sin(rad) + cX ); 
                int Y = (int)((point.get(i).getIntX()-cX)*Math.sin(rad) + 
                                 (point.get(i).getIntY()-cY)*Math.cos(rad) + cY );
-               pts.add(new Points(X, Y));
+               pts.add(new Point(X, Y));
             }
             
             return pts;     
@@ -250,16 +250,16 @@ public class CoreUtilities {
         }
     }
     
-    public static ArrayList <Points> rotateToZero(ArrayList<Points> input) {
+    public static ArrayList <Point> rotateToZero(ArrayList<Point> input) {
         double zeroAng = indicativeAngleWrtCentroid(input);
-        ArrayList<Points> pts = rotateByAngle(input, zeroAng);
+        ArrayList<Point> pts = rotateByAngle(input, zeroAng);
         return pts;        
     }
     
-    public static double indicativeAngleWrtCentroid(ArrayList<Points> input) {
-        Points cent = calculateCentroid(input);
-        Points r = input.get(0);
-        double zeroAng = indicativeAngleWrtPoints(r, cent);
+    public static double indicativeAngleWrtCentroid(ArrayList<Point> input) {
+        Point cent = calculateCentroid(input);
+        Point r = input.get(0);
+        double zeroAng = indicativeAngleWrtPoint(r, cent);
         return zeroAng;
     }
     
@@ -267,7 +267,7 @@ public class CoreUtilities {
     // by the circle centered on the start point with a radius to the end point, 
     // where 0 radians is straight right from start (+x-axis) and PI/2 radians is
     // straight down (+y-axis).
-    public static double indicativeAngleWrtPoints(Points p1, Points p2) {
+    public static double indicativeAngleWrtPoint(Point p1, Point p2) {
         double ang = 0.0;
         if (p1.getIntX() != p2.getIntX()) {
             ang = Math.atan2(p2.getIntY() - p1.getIntY(), p2.getIntX() - p1.getIntX());
@@ -284,7 +284,7 @@ public class CoreUtilities {
         return ang;
     }
     
-    public static double pathDistance(ArrayList<Points> input, ArrayList<Points> gesture) {
+    public static double pathDistance(ArrayList<Point> input, ArrayList<Point> gesture) {
         int num_points = input.size();
         double dist = 0;
         int c = Math.min(input.size(), gesture.size());
@@ -295,13 +295,13 @@ public class CoreUtilities {
         return avg;
     }
     
-    public static double pathByAngle(ArrayList<Points> input, ArrayList<Points> gesture, double angle) {
+    public static double pathByAngle(ArrayList<Point> input, ArrayList<Point> gesture, double angle) {
         input = rotateByAngle(input, angle);
         double path = pathDistance(input, gesture);
         return path;
     }
     
-    public static double bestAngleDistance(ArrayList<Points> input, ArrayList<Points> gesture, 
+    public static double bestAngleDistance(ArrayList<Point> input, ArrayList<Point> gesture, 
                                                         double angA ,double angB, double angDelta) {
         double angX1 = GOLDEN_RATIO*angA + (1-GOLDEN_RATIO)*angB;
         double f1 = pathByAngle(input, gesture, angX1);
@@ -327,23 +327,23 @@ public class CoreUtilities {
         return Math.min(f1, f2);
     }
     
-    public static ArrayList<Points> preProcessing (ArrayList<Points> input, Gesture temp) {
+    public static ArrayList<Point> preProcessing (ArrayList<Point> input, Gesture temp) {
         
         input = resampleInput(input, RESAMPLE);
         input = rotateToZero(input);
         findExtremumXY(input);
         input = scaleByWandH(250, 250, input);
-        input = relocateCentroid(new Points(0, 0), input);
+        input = relocateCentroid(new Point(0, 0), input);
         if (!processed) {
             int n_temp = Gesture.gestures_list.size();
             for (int i=0; i<n_temp; i++) {
                 String name = Gesture.gestures_list.get(i).getName();
-                ArrayList <Points> compare = Gesture.gestures_list.get(i).getPoints();
+                ArrayList <Point> compare = Gesture.gestures_list.get(i).getPoints();
                 compare = resampleInput(compare, RESAMPLE);
                 compare = rotateToZero(compare);
                 findExtremumXY(compare);
                 compare = scaleByWandH(250, 250, compare);
-                compare = relocateCentroid(new Points(0, 0), compare);
+                compare = relocateCentroid(new Point(0, 0), compare);
                 Gesture.gestures_list.set(i, new GesturesList(name, compare));
             }
             processed = true;
@@ -356,7 +356,7 @@ public class CoreUtilities {
    ******************   BASED ON GOLDEN SECTION SEARCH    ***********************
    ******************************************************************************/ 
     
-    public static void gssAlgo (ArrayList<Points> input, Gesture templates,
+    public static void gssAlgo (ArrayList<Point> input, Gesture templates,
                                                 double minAng, double maxAng, double angDel) {
         input = preProcessing(input, templates);
         result = new ArrayList<>();
@@ -381,7 +381,7 @@ public class CoreUtilities {
   ************************    THE KNN ALGORITHM    ******************************
   ******************************************************************************/   
 
-    public static void knnAlgo(ArrayList<Points> inp){
+    public static void knnAlgo(ArrayList<Point> inp){
         int num_points = inp.size();
         double rec_dist = 0;
         
@@ -392,7 +392,7 @@ public class CoreUtilities {
             System.out.print("X: "+width_X+"*"+width_Y+"\n");*/
             inp = scaleByWandH(100, 200, inp);
             inp = resampleInput(inp, 60);
-            Points inp_centroid = calculateCentroid(inp);
+            Point inp_centroid = calculateCentroid(inp);
             
             if (Gesture.parsed) {
                 int gest = Gesture.gestures_list.size();
@@ -401,18 +401,18 @@ public class CoreUtilities {
                     
                     for (int i=0; i<gest; i++){
                         
-                        ArrayList <Points> compare = Gesture.gestures_list.get(i).getPoints();
+                        ArrayList <Point> compare = Gesture.gestures_list.get(i).getPoints();
                         compare = resampleInput(compare, 60);
-                        Points gest_centroid = calculateCentroid(compare);
-                        compare = relocateCentroid(new Points(0, 0), compare);
-                        inp = relocateCentroid(new Points(0, 0), inp);
+                        Point gest_centroid = calculateCentroid(compare);
+                        compare = relocateCentroid(new Point(0, 0), compare);
+                        inp = relocateCentroid(new Point(0, 0), inp);
                         /*for (int l=0; l<60; l++){
                             System.out.print("Input: "+inp.get(l).getIntX()+"*"+inp.get(l).getIntY()+"\n");
                             System.out.print("Compare: "+compare.get(l).getIntX()+"*"+compare.get(l).getIntY()+"\n");
                         }*/
                         for (int j=0; j<60; j++) {
                             for (int k=0; k<60; k++) {
-                                double dist = calculateDistance((Points)inp.get(k), (Points)compare.get(j));
+                                double dist = calculateDistance((Point)inp.get(k), (Point)compare.get(j));
                                 System.out.print("Dist: "+dist+"\n");
                                 rec_dist += (1/dist);
                             }

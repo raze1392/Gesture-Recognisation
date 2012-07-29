@@ -12,7 +12,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import recog.core.Points;
+import recog.core.Point;
 
 /**
  *
@@ -21,8 +21,7 @@ import recog.core.Points;
 public class Gesture implements Runnable{
     
     public static ArrayList<GesturesList> gestures_list = new ArrayList<> (); 
-    private static ArrayList<Points> gesture_points = new ArrayList<> ();
-    private static ArrayList<Points> prev_points = new ArrayList<> ();
+    private static ArrayList<Point> gesture_points = new ArrayList<> ();
     private static String gesture_name;
     public static boolean parsed = false;
         
@@ -76,7 +75,7 @@ public class Gesture implements Runnable{
                     
                     //System.out.print(qName+"\n");
                     if (qName.equalsIgnoreCase("Point")){
-                        gesture_points.add(new Points(X, Y));
+                        gesture_points.add(new Point(X, Y));
                     } else if (qName.equalsIgnoreCase("Gesture")) {
                         gestures_list.add(new GesturesList(gesture_name, gesture_points));
                     } 

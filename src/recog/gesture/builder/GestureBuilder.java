@@ -22,7 +22,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 import recog.core.CoreUtilities;
-import recog.core.Points;
+import recog.core.Point;
 
 /**
  *
@@ -36,7 +36,7 @@ public class GestureBuilder {
         this.file = file;
     }
    
-    private boolean record(String name, String category, ArrayList <Points> input) {
+    private boolean record(String name, String category, ArrayList <Point> input) {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -82,7 +82,7 @@ public class GestureBuilder {
         return false;
     }
     
-    public boolean reordGesture(String name, String category,  ArrayList <Points> input) {
+    public boolean reordGesture(String name, String category,  ArrayList <Point> input) {
         input = CoreUtilities.resampleInput(input, CoreUtilities.RESAMPLE);
         boolean recorded = record(name, category, input);
         return recorded;                
