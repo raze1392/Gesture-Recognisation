@@ -36,7 +36,7 @@ public class GestureBuilder {
         this.file = file;
     }
    
-    private boolean record(String name, ArrayList <Points> input) {
+    private boolean record(String name, String category, ArrayList <Points> input) {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -55,7 +55,7 @@ public class GestureBuilder {
                 gesture.appendChild(point);
             }
             
-            gesture.setAttribute("category", "alphabets");
+            gesture.setAttribute("category", category);
             gesture.setAttribute("name", name);
             root.appendChild(gesture);
             
@@ -82,9 +82,9 @@ public class GestureBuilder {
         return false;
     }
     
-    public boolean reordGesture(String name, ArrayList <Points> input) {
+    public boolean reordGesture(String name, String category,  ArrayList <Points> input) {
         input = CoreUtilities.resampleInput(input, CoreUtilities.RESAMPLE);
-        boolean recorded = record(name, input);
+        boolean recorded = record(name, category, input);
         return recorded;                
     }
     
