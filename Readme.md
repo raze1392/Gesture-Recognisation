@@ -39,7 +39,7 @@ List of Methods in CoreUtilities:
     
     public static void findExtremumXY (ArrayList<Point> point) 
     
-    public static Rectangle createBound () 
+    public static Rectangle createBound (ArrayList<Point> input) 
     
     public static ArrayList<Point> scaleByPercent (float scale, ArrayList<Point> point) 
     
@@ -76,5 +76,7 @@ List of Methods in CoreUtilities:
         
 
 More detail about it soon. Till then Fork it, hack it, and if you think others would benefit, issue a pull request on this repo.
+
+This project will soon be ported to C#, Python and Javascript. If you are interested in helping to port it expand its features then drop me a line.
 
 Happy Coding!
