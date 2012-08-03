@@ -102,7 +102,9 @@ public class CoreUtilities {
         width_Y = Math.abs(max_Y - min_Y);
     }
     
-    public static Rectangle createBound () {
+    public static Rectangle createBound (ArrayList<Point> input) {
+        findExtremumXY(input);
+        
         if (width_X > 0 && width_Y > 0){
             return new Rectangle(min_X, min_Y, width_X, width_Y);
         } else {
